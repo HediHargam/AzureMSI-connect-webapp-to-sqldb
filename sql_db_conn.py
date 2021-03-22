@@ -21,11 +21,11 @@ def get_data_from_sql_db(
 
     resp = requests.get(token_auth_uri, headers=head_msi)
     access_token = bytes(resp.json()["access_token"], "utf-8")
-    tok = b""
+    exptoken = b""
     for i in access_token:
-        tok += bytes({i})
-        tok += bytes(1)
-    struct_token = struct.pack("=i", len(tok)) + tok
+        exptoken += bytes({i})
+        exptoken += bytes(1)
+    struct_token = struct.pack("=i", len(exptoken)) + exptoken
 
     with pyodbc.connect(
         "Driver=" + driver + ";Server=" + server + ";PORT=1433;Database=" + database,
