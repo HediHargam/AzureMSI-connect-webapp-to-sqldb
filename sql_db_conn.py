@@ -6,10 +6,8 @@ import struct
 from logzero import logger
 
 
-def get_data_from_sql_db(
-    server: str, database: str, resource_uri: str, driver: str, query: str
-) -> pd.DataFrame:
-    """"Get data from SQL database with MSI Authentication and return df from executed query"""
+def get_token_with_msi(resource_uri: str):
+    "Retrieve token in the right format (binary structure) for SQL connection with SQL_COPT_SS_ACCES_TOKEN attribute"
 
     identity_endpoint = os.environ["IDENTITY_ENDPOINT"]
     identity_header = os.environ["IDENTITY_HEADER"]
@@ -27,9 +25,19 @@ def get_data_from_sql_db(
         exptoken += bytes(1)
     struct_token = struct.pack("=i", len(exptoken)) + exptoken
 
+    return struct_token
+
+
+def get_data_from_sql_db(
+    server: str, database: str, driver: str, query: str
+) -> pd.DataFrame:
+    """"Get data from SQL database with MSI Authentication and return df from executed query"""
+
+    token = get_token_with_msi(resource_uri="https://database.windows.net")
+
     with pyodbc.connect(
         "Driver=" + driver + ";Server=" + server + ";PORT=1433;Database=" + database,
-        attrs_before={1256: bytearray(struct_token)},
+        attrs_before={1256: bytearray(token)},
     ) as conn:
 
         logger.info("Successful connection to database")
@@ -47,7 +55,6 @@ if __name__ == "__main__":
     df = get_data_from_sql_db(
         server="yourserver.database.windows.net",
         database="yourdatabasename",
-        resource_uri="https://database.windows.net",
         driver="{ODBC Driver 17 for SQL Server}",
         query="SELECT * FROM YOURTABLE",
     )
