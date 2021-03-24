@@ -6,7 +6,7 @@ import struct
 from logzero import logger
 
 
-def get_token_with_msi(resource_uri: str):
+def get_token_with_msi(resource_uri: str) -> bytes:
     "Retrieve token in the right format (binary structure) for SQL connection with SQL_COPT_SS_ACCES_TOKEN attribute"
 
     identity_endpoint = os.environ["IDENTITY_ENDPOINT"]
