@@ -33,7 +33,7 @@ def get_data_from_sql_db(
 ) -> pd.DataFrame:
     """"Get data from SQL database with MSI Authentication and return df from executed query"""
 
-    # token = get_token_with_msi(resource_uri="https://database.windows.net")  # May be useful for PostrgresSQL
+    # token = get_token_with_msi(resource_uri="https://ossrdbms-aad.database.windows.net")  # May be useful for PostrgresSQL
 
     with pyodbc.connect(
         "Driver="
